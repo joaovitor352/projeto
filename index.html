@@ -7,9 +7,21 @@
 </head>
 <body>
   <h1>Alerta de Produtos Próximos ao Vencimento</h1>
+  <h4>Você poder ver seções que possuem produtos proximos ao vencimentos:</h4>
+  <div class="tabs">
+    <button class="tab-button" onclick="mostrarSecao('Vitaminas')">Vitaminas</button>
+    <button class="tab-button" onclick="mostrarSecao('Suplementos')">Suplementos</button>
+    <button class="tab-button" onclick="mostrarSecao('MIPs')">MIPs</button>
+    <button class="tab-button" onclick="mostrarSecao('Desodorante')">Desodorante</button>
+    <button class="tab-button" onclick="mostrarSecao('Higiene Bucal')">Higiene Bucal</button>
+    <button class="tab-button" onclick="mostrarSecao('Sabonete')">Sabonete</button>
+    <button class="tab-button" onclick="mostrarSecao('Absorvente')">Absorvente</button>
+    <button class="tab-button" onclick="mostrarSecao('Medicamentos')">Medicamentos</button>
+    <button class="tab-button" onclick="mostrarSecao('Serve')">Serve</button>
+  </div>
 
   <div id="secoes-container">
-    <!-- Seções serão inseridas dinamicamente aqui -->
+    <!-- Conteúdo das seções será injetado via JS -->
   </div>
 
   <script src="script.js"></script>
