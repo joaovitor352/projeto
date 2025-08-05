@@ -1,29 +1,207 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Alerta de Vencimento - Farmácia</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Verificação de Validade - FarmaCheck</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    header {
+      background-color: #2c3e50;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    header img {
+      height: 50px;
+      vertical-align: middle;
+      margin-right: 10px;
+    }
+    h1 {
+      display: inline-block;
+      vertical-align: middle;
+      margin: 0;
+    }
+    .busca-container {
+      margin: 20px;
+      text-align: center;
+    }
+    .menu, .sub-menu {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .menu button, .sub-menu button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+      border-radius: 20px;
+      background-color: #3498db;
+      color: white;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    .menu button:hover, .sub-menu button:hover {
+      background-color: #2980b9;
+      transform: scale(1.05);
+    }
+    .secao {
+      display: none;
+      padding: 20px;
+      background: white;
+      margin: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .mostrar {
+      display: block;
+    }
+    .alerta {
+      border: 2px solid red;
+      padding: 10px;
+      margin: 10px 0;
+      background: #ffe6e6;
+      border-radius: 6px;
+    }
+    .alerta img {
+      max-width: 150px;
+      display: block;
+      margin-bottom: 10px;
+    }
+  </style>
 </head>
 <body>
-  <h1>Alerta de Produtos Próximos ao Vencimento</h1>
-  <h4>Você poder ver seções que possuem produtos proximos ao vencimentos:</h4>
-  <div class="tabs">
-    <button class="tab-button" onclick="mostrarSecao('Vitaminas')">Vitaminas</button>
-    <button class="tab-button" onclick="mostrarSecao('Suplementos')">Suplementos</button>
-    <button class="tab-button" onclick="mostrarSecao('MIPs')">MIPs</button>
-    <button class="tab-button" onclick="mostrarSecao('Desodorante')">Desodorante</button>
-    <button class="tab-button" onclick="mostrarSecao('Higiene Bucal')">Higiene Bucal</button>
-    <button class="tab-button" onclick="mostrarSecao('Sabonete')">Sabonete</button>
-    <button class="tab-button" onclick="mostrarSecao('Absorvente')">Absorvente</button>
-    <button class="tab-button" onclick="mostrarSecao('Medicamentos')">Medicamentos</button>
-    <button class="tab-button" onclick="mostrarSecao('Serve')">Serve</button>
+  <header>
+    <img src="imagens/logo-farmacheck.png" alt="Logo FarmaCheck">
+    <h1>FarmaCheck - Monitoramento de Validades</h1>
+  </header>
+
+  <div class="busca-container">
+    <label for="busca-produtos"><strong>🔍 Buscar produto:</strong></label>
+    <input type="text" id="busca-produtos" placeholder="Digite o nome do produto..." style="padding: 8px; width: 300px; border-radius: 20px; border: 1px solid #ccc;">
   </div>
 
-  <div id="secoes-container">
-    <!-- Conteúdo das seções será injetado via JS -->
+  <div class="menu">
+    <button onclick="mostrarSecao('Medicamentos')">Medicamentos</button>
+    <button onclick="mostrarSecao('Vitaminas')">Vitaminas</button>
+    <button onclick="mostrarSecao('Suplementos')">Suplementos</button>
+    <button onclick="mostrarSecao('MIPs')">MIPs</button>
+    <button onclick="mostrarSecao('Desodorante')">Desodorante</button>
+    <button onclick="mostrarSecao('Higiene Bucal')">Higiene Bucal</button>
+    <button onclick="mostrarSecao('Sabonete')">Sabonete</button>
+    <button onclick="mostrarSecao('Absorvente')">Absorvente</button>
   </div>
 
-  <script src="script.js"></script>
+  <div class="sub-menu" id="submenu-Medicamentos" style="display: none;">
+    <button onclick="mostrarProdutosCategoria('Genéricos')">Genéricos</button>
+    <button onclick="mostrarProdutosCategoria('Similares')">Similares</button>
+    <button onclick="mostrarProdutosCategoria('Estimulantes')">Estimulantes</button>
+    <button onclick="mostrarProdutosCategoria('Referência')">Referência</button>
+  </div>
+
+  <div id="secoes-container"></div>
+
+  <script>
+    const hoje = new Date();
+
+    function adicionarMeses(data, meses) {
+      let novaData = new Date(data);
+      novaData.setMonth(novaData.getMonth() + meses);
+      return novaData;
+    }
+
+    function formatarData(date) {
+      let ano = date.getFullYear();
+      let mes = (date.getMonth() + 1).toString().padStart(2, "0");
+      let dia = date.getDate().toString().padStart(2, "0");
+      return `${ano}-${mes}-${dia}`;
+    }
+
+    const produtos = [
+      { nome: "Paracetamol 750mg", validade: formatarData(adicionarMeses(hoje, 1)), codigoDeBarras: "7891234560012", secao: "Medicamentos", imagem: "img/paracetamol.png" },
+      { nome: "Dipirona Genérico", validade: formatarData(adicionarMeses(hoje, 1)), codigoDeBarras: "7891234560029", secao: "Medicamentos", imagem: "img/dipirona.png" },
+      { nome: "Dorflex", validade: formatarData(adicionarMeses(hoje, 2)), codigoDeBarras: "7891234560036", secao: "Medicamentos", imagem: "img/dorflex.webp" },
+      { nome: "Vitamina C", validade: formatarData(adicionarMeses(hoje, 1)), codigoDeBarras: "7891234560043", secao: "Vitaminas", imagem: "img/vitamina.jpg" },
+      { nome: "Multivitamínico A-Z", validade: formatarData(adicionarMeses(hoje, 1)), codigoDeBarras: "7891234560143", secao: "Vitaminas", imagem: "img/vitaaz.webp" },
+      { nome: "Omega 3", validade: formatarData(adicionarMeses(hoje, 1)), codigoDeBarras: "7891234560050", secao: "Suplementos", imagem: "img/omega3.jpg" },
+      { nome: "Whey Protein", validade: formatarData(adicionarMeses(hoje, 1)), codigoDeBarras: "7891234560067", secao: "Suplementos", imagem: "img/Whey Protein.jpg" },
+      { nome: "Desodorante Roll-On", validade: formatarData(adicionarMeses(hoje, 1)), codigoDeBarras: "7891234560074", secao: "Desodorante", imagem: "img/Roll-on.png" },
+      { nome: "Escova Dental", validade: formatarData(adicionarMeses(hoje, 1)), codigoDeBarras: "7891234560081", secao: "Higiene Bucal", imagem: "img/Escova de dente.png" },
+      { nome: "Sabonete Neutro", validade: formatarData(adicionarMeses(hoje, 1)), codigoDeBarras: "7891234560098", secao: "Sabonete", imagem: "img/sabonete.jpg" },
+      { nome: "Absorvente Noturno", validade: formatarData(adicionarMeses(hoje, 1)), codigoDeBarras: "7891234560104", secao: "Absorvente", imagem: "img/abs-always.webp" },
+      { nome: "Dipirona MIP", validade: formatarData(adicionarMeses(hoje, 1)), codigoDeBarras: "7891234560111", secao: "MIPs", imagem: "img/Dipirona.png" },
+      { nome: "Ibuprofeno Genérico", validade: formatarData(adicionarMeses(hoje, 2)), codigoDeBarras: "7891234560128", secao: "Medicamentos", imagem: "img/ibuprofeno.webp" },
+      { nome: "Doralgina Similar", validade: formatarData(adicionarMeses(hoje, 3)), codigoDeBarras: "7891234560135", secao: "Similares", imagem: "img/doralgina.webp" },
+      { nome: "Viagra Estimulante", validade: formatarData(adicionarMeses(hoje, 2)), codigoDeBarras: "7891234560150", secao: "Estimulantes", imagem: "img/viagra.jpg" },
+      { nome: "Neosaldina Referência", validade: formatarData(adicionarMeses(hoje, 3)), codigoDeBarras: "7891234560167", secao: "Referência", imagem: "img/neosaldina.webp" }
+    ];
+
+    const secoes = ["Medicamentos", "Vitaminas", "Suplementos", "MIPs", "Desodorante", "Higiene Bucal", "Sabonete", "Absorvente"];
+    const diasParaVencer = 60;
+
+    function criarLayoutSecoes() {
+      const container = document.getElementById("secoes-container");
+      container.innerHTML = "";
+      secoes.forEach(secao => {
+        const div = document.createElement("div");
+        div.className = "secao";
+        div.id = `secao-${secao}`;
+        div.innerHTML = `<h2>${secao}</h2>`;
+        container.appendChild(div);
+      });
+    }
+
+    function mostrarSecao(secaoId) {
+      document.querySelectorAll('.secao').forEach(secao => secao.classList.remove('mostrar'));
+      document.querySelectorAll('.sub-menu').forEach(sub => sub.style.display = "none");
+      const secaoAtual = document.getElementById(`secao-${secaoId}`);
+      if (secaoAtual) secaoAtual.classList.add('mostrar');
+      if (secaoId === "Medicamentos") document.getElementById("submenu-Medicamentos").style.display = "block";
+    }
+
+    function mostrarProdutos(filtroTexto = "") {
+      secoes.forEach(secao => {
+        const secaoDiv = document.getElementById(`secao-${secao}`);
+        if (secaoDiv) secaoDiv.innerHTML = `<h2>${secao}</h2>`;
+      });
+
+      produtos.forEach(produto => {
+        const nomeLower = produto.nome.toLowerCase();
+        const dataValidade = new Date(produto.validade);
+        const diffDias = Math.ceil((dataValidade - hoje) / (1000 * 60 * 60 * 24));
+
+        if ((filtroTexto === "" && diffDias <= diasParaVencer && diffDias >= 0) ||
+            (filtroTexto !== "" && nomeLower.includes(filtroTexto.toLowerCase()))) {
+          const alerta = document.createElement("div");
+          alerta.className = "alerta";
+          alerta.innerHTML = `
+            <img src="${produto.imagem}" alt="${produto.nome}">
+            <h3>${produto.nome}</h3>
+            <p><strong>Código de Barras:</strong> ${produto.codigoDeBarras}</p>
+            <p><strong>Validade:</strong> ${produto.validade}</p>
+            <p style="color:red;"><strong>⚠ Faltam ${diffDias} dia(s) para vencer!</strong></p>
+          `;
+
+          const secaoDiv = document.getElementById(`secao-${produto.secao}`);
+          if (secaoDiv) secaoDiv.appendChild(alerta);
+        }
+      });
+    }
+
+    document.getElementById("busca-produtos").addEventListener("input", () => {
+      const textoBusca = document.getElementById("busca-produtos").value.trim();
+      mostrarProdutos(textoBusca);
+    });
+
+    criarLayoutSecoes();
+    mostrarProdutos();
+    mostrarSecao("Medicamentos");
+  </script>
 </body>
 </html>
